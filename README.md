@@ -1,38 +1,76 @@
-# create-svelte
+# svelte-google-auth
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+> :warning: **Work in progress**: Use at your own risk
 
-## Creating a project
+This library makes it easy to use Google authentication in sveltekit. The library handles the interaction with [Google Identity Services](https://developers.google.com/identity), and stores the authenticated user in a cookie for subsequent visits.
 
-If you're seeing this, you've probably already done this step. Congrats!
+The library makes it possible to run authorized google api calls from both client side and server side.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+## How does it work
 
-# create a new project in my-app
-npm create svelte@latest my-app
+The library follows in broad strokes the offical guide for [oauth2 code model](https://developers.google.com/identity/oauth2/web/guides/use-code-model#redirect-mode).
+
+1. The user authenticates with the site in a popup
+2. The popup responds with a code that gets send to the backend
+3. Backend converts the code to tokens (both access token and refresh token)
+4. The tokens get signed into a jwt httpOnly cookie, making every subsequent call to the backend authenticated
+5. The library returns the authenticated user back to the client using [page data](https://kit.svelte.dev/docs/load)
+
+## Example
+
+[/src/routes](/src/routes) Shows how the api can be used. Run `npm run dev` to run it locally.
+
+## Getting started
+
+### Credentials
+
+To use the library, first create a [OAuth2 Client Credentials](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred) in Google Cloud. Store the json file in your project, but make sure to not commiting the file to git.
+
+### hooks
+
+In `src/hooks.(js|ts)`, initialize the authentication hook.
+
+```ts
+import { SvelteGoogleAuthHook } from 'svelte-google-auth';
+import type { Handle } from '@sveltejs/kit';
+
+// Import client credentials from json file
+import client_secret from '../client_secret.json';
+
+const auth = new SvelteGoogleAuthHook(client_secret.web);
+
+export const handle: Handle = async ({ event, resolve }) => {
+	return await auth.handleAuth({ event, resolve });
+};
 ```
 
-## Developing
+This hook creates url routes needed for authentication callbacks, and parses authentication cookies on each request.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+### +layout.server
 
-```bash
-npm run dev
+In `src/routes/+layout.server.(js|ts)`, create the following load function:
 
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+```ts
+import { hydrateAuth } from 'svelte-google-auth';
+import type { LayoutServerLoad } from './$types.js';
+
+export const load: LayoutServerLoad = ({ locals }) => {
+	// By calling hydateAuth, certain variables from locals are parsed to the client
+	// allowing the client to access the user information and the client_id for login
+	return { ...hydrateAuth(locals) };
+};
 ```
 
-## Building
+### Page
 
-To create a production version of your app:
+You can now use the library on any page/layout like this
 
-```bash
-npm run build
+```html
+<script lang="ts">
+	import { signIn, signOut, user } from 'svelte-google-auth';
+</script>
+
+{$user?.name}
+<button on:click={() => signIn()}>Sign In</button>
+<button on:click={() => signOut()}>Sign Out</button>
 ```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
