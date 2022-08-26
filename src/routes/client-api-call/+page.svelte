@@ -6,8 +6,7 @@
 		$user &&
 		// Get gapi client, already initialzed with users access token.
 		getGapiClient({
-			discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
-			apiKey: import.meta.env.API_KEY
+			discoveryDocs: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest']
 		})
 			// Use the authenticated gapi client to call calendar
 			.then((client) =>
