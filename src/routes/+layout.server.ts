@@ -1,4 +1,4 @@
-import { hydrateAuth } from '$lib/googleAuth.js';
+import { hydrateAuth } from '$lib/server.js';
 import type { LayoutServerLoad } from './$types.js';
 
 export const load: LayoutServerLoad = ({ locals }) => {

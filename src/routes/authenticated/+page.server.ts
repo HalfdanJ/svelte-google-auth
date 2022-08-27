@@ -1,4 +1,4 @@
-import { isSignedIn } from '$lib/googleAuth.js';
+import { isSignedIn } from '$lib/server.js';
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types.js';
 

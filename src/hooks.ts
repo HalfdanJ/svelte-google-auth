@@ -1,4 +1,4 @@
-import { SvelteGoogleAuthHook } from '$lib/googleAuth.js';
+import { SvelteGoogleAuthHook } from '$lib/server.js';
 import type { Handle } from '@sveltejs/kit';
 import client_secret from '../client_secret.json';
 

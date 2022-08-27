@@ -2,7 +2,7 @@ import { invalidate } from '$app/navigation';
 import { page } from '$app/stores';
 import { derived, get } from 'svelte/store';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
-import type { AuthClientData } from './googleAuth.js';
+import type { AuthClientData } from './server.js';
 
 export const user = derived(page, ($page) => ($page.data.auth as AuthClientData).user);
 

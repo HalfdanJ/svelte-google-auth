@@ -1,4 +1,4 @@
-import { getOAuth2Client, isSignedIn } from '$lib/googleAuth.js';
+import { getOAuth2Client, isSignedIn } from '$lib/server.js';
 import type { OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
 import type { PageServerLoad } from './$types.js';

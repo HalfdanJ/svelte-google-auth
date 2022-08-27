@@ -7,4 +7,4 @@ export {
 	hydrateAuth,
 	isSignedIn,
 	SvelteGoogleAuthHook
-} from './googleAuth.js';
+} from './server.js';
