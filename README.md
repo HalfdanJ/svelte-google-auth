@@ -22,6 +22,14 @@ The library follows in broad strokes the offical guide for [oauth2 code model](h
 
 ## Getting started
 
+### Install
+
+Run
+
+```
+npm i svelte-google-auth
+```
+
 ### Credentials
 
 To use the library, first create a [OAuth2 Client Credentials](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred) in Google Cloud. Store the json file in your project, but make sure to not commiting the file to git.
