@@ -15,18 +15,33 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: '16'
-      - run: npm install
-      - run: npm lint
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '16'
-      - run: npm install
-      - run: npm run test
+          node-version: '18'
+      - run: npm i
+      - run: npm run lint
+  # test:
+  #   runs-on: ubuntu-latest
+  #   timeout-minutes: 10
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - uses: actions/setup-node@v3
+  #       with:
+  #         node-version: '18'
+  #     - run: npm i
+  #     - run: npx playwright install-deps
+  #     - run: npx playwright install
+  #     - name: Run Playwright Tests
+  #       run: npm run test
+  # - name: Archive test results
+  #   if: failure()
+  #   shell: bash
+  #   run: find packages -type d -name test-results -not -empty | tar -czf test-results.tar.gz --files-from=-
+  # - name: Upload test results
+  #   if: failure()
+  #   uses: actions/upload-artifact@v3
+  #   with:
+  #     retention-days: 3
+  #     name: test-failure-${{ github.run_id }}
+  #     path: test-results.tar.gz
