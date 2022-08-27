@@ -29,4 +29,5 @@ jobs:
         with:
           node-version: '16'
       - run: npm i
+      - run: npx playwright install
       - run: npm run test
