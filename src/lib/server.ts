@@ -53,7 +53,7 @@ export function hydrateAuth(locals: App.Locals) {
 	const auth: AuthClientData = {
 		user: authLocals.user,
 		client_id: authLocals.client_id,
-		access_token: authLocals.token?.access_token ?? undefined
+		access_token: authLocals.access_token ?? undefined
 	};
 
 	return { auth };
