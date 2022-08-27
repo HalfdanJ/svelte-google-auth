@@ -1,6 +1,13 @@
 {
 	"name": "svelte-google-auth",
 	"version": "0.0.1",
+	"author": "Jonas Jongejan <jonas@halfdanj.dk>",
+	"license": "apache-2.0",
+	"keywords": [
+		"svelte",
+		"sveltekit",
+		"oauth2"
+	],
 	"scripts": {
 		"dev": "vite dev",
 		"build": "svelte-kit sync && svelte-package",
