@@ -88,8 +88,10 @@ export class SvelteGoogleAuthHook {
 	}
 
 	public handleAuth: Handle = async ({ event, resolve }) => {
+		// Read stored data from signed auth cookie
 		const storedTokens = this.parseSignedCookie(event.request);
 
+		// Create a oauth2 client
 		const oauth2Client = new google.auth.OAuth2(this.client.client_id, this.client.client_secret);
 
 		(event.locals as AuthLocals) = {
@@ -99,9 +101,12 @@ export class SvelteGoogleAuthHook {
 		};
 
 		if (storedTokens?.refresh_token) {
+			// Obtain a valid access token
 			const accessToken = await this.getAccessToken(storedTokens);
+			// Decode user information from id token
 			const user = this.decodeIdToken(storedTokens);
 
+			// Set credentials on oauth2 client
 			oauth2Client.setCredentials(storedTokens);
 
 			// Store tokens and user in locals
@@ -115,6 +120,7 @@ export class SvelteGoogleAuthHook {
 			};
 		}
 
+		// Inject url's for handling sign in and out
 		if (event.url.pathname === AUTH_CODE_CALLBACK_URL) {
 			return this.handlePostCode({ event, resolve });
 		} else if (event.url.pathname === AUTH_SIGNOUT_URL) {
@@ -125,6 +131,7 @@ export class SvelteGoogleAuthHook {
 	};
 
 	private handleSignOut: Handle = async () => {
+		// Overwrite the stored cookie with an empty jwt token
 		const signed = this.signJwtTokens({});
 
 		return new Response('signed out', {
@@ -188,7 +195,7 @@ export class SvelteGoogleAuthHook {
 		return this.jwtSigner(tokens);
 	}
 
-	parseSignedCookie(request: Request): null | Credentials {
+	private parseSignedCookie(request: Request): null | Credentials {
 		const cookies = request.headers.get('cookie');
 		if (!cookies) return null;
 
