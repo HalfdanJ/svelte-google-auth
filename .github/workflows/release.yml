@@ -37,7 +37,7 @@ jobs:
       - run: npm install
         if: ${{ steps.release.outputs.release_created }}
 
-      - run: npm build
+      - run: npm run build
         if: ${{ steps.release.outputs.release_created }}
 
       - run: npm publish
