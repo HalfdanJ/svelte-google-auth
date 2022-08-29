@@ -34,6 +34,9 @@ npm i svelte-google-auth
 
 To use the library, first create a [OAuth2 Client Credentials](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred) in Google Cloud. Store the json file in your project, but make sure to not commiting the file to git.
 
+Add `http://localhost:5173` as Authorized JavaScript origins, and
+`http://localhost:5173/_auth/callback` as Authorized redirect URIs
+
 ### hooks
 
 In `src/hooks.(js|ts)`, initialize the authentication hook.
@@ -75,7 +78,7 @@ You can now use the library on any page/layout like this
 
 ```html
 <script lang="ts">
-	import { signIn, signOut, user } from 'svelte-google-auth';
+	import { signIn, signOut, user } from 'svelte-google-auth/client';
 </script>
 
 {$user?.name}
