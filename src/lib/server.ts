@@ -1,9 +1,8 @@
-import { error, type Handle } from '@sveltejs/kit';
+import { error, redirect, type Handle } from '@sveltejs/kit';
 import cookie from 'cookie';
-import { createDecoder, createSigner, createVerifier, SignerSync } from 'fast-jwt';
 import type { Credentials, OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
-
+import jwt from 'jsonwebtoken';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
 
 export type DecodedIdToken = {
@@ -29,6 +28,7 @@ export interface AuthLocals {
 	user?: DecodedIdToken;
 	token?: Credentials;
 	client_id: string;
+	client_secret: string;
 	client: OAuth2Client;
 }
 
@@ -67,11 +67,33 @@ export function isSignedIn(locals: App.Locals) {
 	return !!getAuthLocals(locals).user;
 }
 
-export class SvelteGoogleAuthHook {
-	private jwtVerifier: ReturnType<typeof createVerifier>;
-	private jwtDecoder: ReturnType<typeof createDecoder>;
-	private jwtSigner: typeof SignerSync;
+export function generateAuthUrl(
+	locals: App.Locals,
+	url: URL,
+	scopes: string[],
+	redirectUrl?: string,
+	prompt = 'consent'
+) {
+	const authLocals = getAuthLocals(locals);
 
+	const redirect_uri = `${url.origin}${AUTH_CODE_CALLBACK_URL}`;
+	const client = new google.auth.OAuth2(
+		authLocals.client_id,
+		authLocals.client_secret,
+		redirect_uri
+	);
+
+	return client.generateAuthUrl({
+		access_type: 'offline',
+		response_type: 'code',
+		prompt,
+		scope: scopes,
+		redirect_uri,
+		state: redirectUrl
+	});
+}
+
+export class SvelteGoogleAuthHook {
 	constructor(
 		private client: {
 			client_id: string;
@@ -80,12 +102,7 @@ export class SvelteGoogleAuthHook {
 			[key: string]: unknown;
 		},
 		private cookie_name = 'svgoogleauth'
-	) {
-		const key = this.client.jwt_secret ?? this.client.client_secret;
-		this.jwtVerifier = createVerifier({ key });
-		this.jwtDecoder = createDecoder();
-		this.jwtSigner = createSigner({ key });
-	}
+	) {}
 
 	public handleAuth: Handle = async ({ event, resolve }) => {
 		// Read stored data from signed auth cookie
@@ -97,6 +114,7 @@ export class SvelteGoogleAuthHook {
 		(event.locals as AuthLocals) = {
 			...event.locals,
 			client_id: this.client.client_id,
+			client_secret: this.client.client_secret,
 			client: oauth2Client
 		};
 
@@ -116,13 +134,18 @@ export class SvelteGoogleAuthHook {
 				user,
 				token: storedTokens,
 				client_id: this.client.client_id,
+				client_secret: this.client.client_secret,
 				client: oauth2Client
 			};
 		}
 
 		// Inject url's for handling sign in and out
 		if (event.url.pathname === AUTH_CODE_CALLBACK_URL) {
-			return this.handlePostCode({ event, resolve });
+			if (event.request.method === 'POST') {
+				return this.handlePostCode({ event, resolve });
+			} else if (event.request.method === 'GET') {
+				return this.handleGetCode({ event, resolve });
+			}
 		} else if (event.url.pathname === AUTH_SIGNOUT_URL) {
 			return this.handleSignOut({ event, resolve });
 		}
@@ -163,7 +186,26 @@ export class SvelteGoogleAuthHook {
 		});
 	};
 
-	async getTokenFromCode(code: string, redirect_uri: string) {
+	private handleGetCode: Handle = async ({ event }) => {
+		const code = event.url.searchParams.get('code');
+		const state = event.url.searchParams.get('state') || '/';
+		if (!code) {
+			throw error(500, 'No code to get token for');
+		}
+		const redirect_uri = `${event.url.origin}${event.url.pathname}`;
+		const tokens = await this.getTokenFromCode(code.toString(), redirect_uri);
+		const signedTokens = this.signJwtTokens(tokens);
+
+		return new Response(`Ok`, {
+			status: 302,
+			headers: {
+				'set-cookie': `${this.cookie_name}=${signedTokens}; Path=/; HttpOnly`,
+				Location: `${event.url.origin}${state}`
+			}
+		});
+	};
+
+	private async getTokenFromCode(code: string, redirect_uri: string) {
 		const oauth2Client = new google.auth.OAuth2(
 			this.client.client_id,
 			this.client.client_secret,
@@ -192,7 +234,8 @@ export class SvelteGoogleAuthHook {
 	}
 
 	private signJwtTokens(tokens: Credentials) {
-		return this.jwtSigner(tokens);
+		const key = this.client.jwt_secret ?? this.client.client_secret;
+		return jwt.sign(tokens, key);
 	}
 
 	private parseSignedCookie(request: Request): null | Credentials {
@@ -203,12 +246,18 @@ export class SvelteGoogleAuthHook {
 		const authCookie = parsedCookies[this.cookie_name] ?? null;
 		if (!authCookie) return null;
 
-		return this.jwtVerifier(authCookie) as Credentials;
+		const key = this.client.jwt_secret ?? this.client.client_secret;
+		try {
+			return jwt.verify(authCookie, key) as Credentials;
+		} catch (e) {
+			console.warn(e);
+			return null;
+		}
 	}
 
 	private decodeIdToken(tokens: Credentials) {
 		if (!tokens.id_token) return undefined;
-		const decoded = this.jwtDecoder(tokens.id_token) as DecodedIdToken;
+		const decoded = jwt.decode(tokens.id_token) as unknown as DecodedIdToken;
 		if (decoded.iss !== 'https://accounts.google.com')
 			throw error(403, 'Invalid id_token issuer ' + decoded.iss);
 		return decoded;

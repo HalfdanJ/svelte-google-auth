@@ -14,3 +14,6 @@
 	<a href="/server-api-call">/server-api-call</a> - Example showing how to call api calls from server
 	side
 </p>
+<p>
+	<a href="/signin">/signin</a> - Example of redirecting user to sign in prompt instead of showing popup
+</p>

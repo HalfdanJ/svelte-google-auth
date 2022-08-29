@@ -6,5 +6,6 @@ export {
 	getOAuth2Client,
 	hydrateAuth,
 	isSignedIn,
+	generateAuthUrl,
 	SvelteGoogleAuthHook
 } from './server.js';
