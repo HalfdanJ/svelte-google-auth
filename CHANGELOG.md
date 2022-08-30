@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.2](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.1...v0.3.2) (2022-08-30)
+
+
+### Bug Fixes
+
+* Dont export client in index ([ced78ea](https://www.github.com/HalfdanJ/svelte-google-auth/commit/ced78eae9ee3e19169167b5bbd23c6dec263fde6))
+
 ### [0.3.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.0...v0.3.1) (2022-08-30)
 
 
