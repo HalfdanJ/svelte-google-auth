@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.4](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.3...v0.3.4) (2022-08-30)
+
+
+### Bug Fixes
+
+* Solve dynamic import issues when bundled ([58c29d3](https://www.github.com/HalfdanJ/svelte-google-auth/commit/58c29d36e1865c35f1947e271110cd9e2528aac2))
+
 ### [0.3.3](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.2...v0.3.3) (2022-08-30)
 
 
