@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.0...v0.3.1) (2022-08-30)
+
+
+### Bug Fixes
+
+* better typings ([#6](https://www.github.com/HalfdanJ/svelte-google-auth/issues/6)) ([1b4e5a4](https://www.github.com/HalfdanJ/svelte-google-auth/commit/1b4e5a47a411051f5e2d3c8bb664e872d499c8d4))
+
 ## [0.3.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.2.0...v0.3.0) (2022-08-29)
 
 
