@@ -1,4 +1,4 @@
-import { error, redirect, type Handle } from '@sveltejs/kit';
+import { error, type Handle } from '@sveltejs/kit';
 import cookie from 'cookie';
 import type { Credentials, OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
@@ -23,8 +23,7 @@ export type DecodedIdToken = {
 	exp: string;
 };
 
-export interface AuthLocals {
-	access_token?: string;
+export interface AuthLocals extends App.Locals {
 	user?: DecodedIdToken;
 	token?: Credentials;
 	client_id: string;
@@ -32,14 +31,29 @@ export interface AuthLocals {
 	client: OAuth2Client;
 }
 
-export interface AuthClientData {
-	user: DecodedIdToken | undefined;
+export interface AuthLocalsSignedIn extends AuthLocals {
+	user: DecodedIdToken;
+	token: Credentials;
 	client_id: string;
+	client_secret: string;
+	client: OAuth2Client;
+}
+
+export interface AuthClientData {
+	client_id: string;
+	user?: DecodedIdToken;
 	access_token?: string;
 }
 
+/** Client data when user is signed in */
+export interface AuthClientDataSignedIn {
+	client_id: string;
+	user: DecodedIdToken;
+	access_token: string;
+}
+
 export function getAuthLocals(locals: App.Locals) {
-	return locals as AuthLocals;
+	return locals as AuthLocals & App.Locals;
 }
 
 /**
@@ -48,22 +62,26 @@ export function getAuthLocals(locals: App.Locals) {
  * @param locals the apps locals
  * @returns data served to the client
  */
-export function hydrateAuth(locals: App.Locals) {
+export function hydrateAuth(locals: AuthLocalsSignedIn): { auth: AuthClientDataSignedIn };
+export function hydrateAuth(locals: App.Locals): { auth: AuthClientData };
+export function hydrateAuth(locals: App.Locals | AuthLocalsSignedIn): {
+	auth: AuthClientData | AuthClientDataSignedIn;
+} {
 	const authLocals = getAuthLocals(locals);
-	const auth: AuthClientData = {
-		user: authLocals.user,
-		client_id: authLocals.client_id,
-		access_token: authLocals.access_token ?? undefined
+	return {
+		auth: {
+			user: authLocals.user,
+			client_id: authLocals.client_id,
+			access_token: authLocals?.token?.access_token ?? undefined
+		}
 	};
-
-	return { auth };
 }
 
 export function getOAuth2Client(locals: App.Locals) {
 	const authLocals = getAuthLocals(locals);
 	return authLocals.client;
 }
-export function isSignedIn(locals: App.Locals) {
+export function isSignedIn(locals: App.Locals): locals is AuthLocalsSignedIn {
 	return !!getAuthLocals(locals).user;
 }
 
@@ -127,10 +145,11 @@ export class SvelteGoogleAuthHook {
 			// Set credentials on oauth2 client
 			oauth2Client.setCredentials(storedTokens);
 
+			storedTokens.access_token = accessToken;
+
 			// Store tokens and user in locals
 			(event.locals as AuthLocals) = {
 				...event.locals,
-				access_token: accessToken ?? undefined,
 				user,
 				token: storedTokens,
 				client_id: this.client.client_id,

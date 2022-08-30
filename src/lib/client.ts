@@ -4,7 +4,7 @@ import { derived, get } from 'svelte/store';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
 import type { AuthClientData } from './server.js';
 
-export const user = derived(page, ($page) => ($page.data.auth as AuthClientData).user);
+export const user = derived(page, ($page) => ($page?.data?.auth as AuthClientData)?.user);
 
 /**
  * Prompt user to sign in using google auth
