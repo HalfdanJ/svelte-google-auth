@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.3.3](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.2...v0.3.3) (2022-08-30)
+
+
+### Bug Fixes
+
+* dynamic import of app paths ([af8e7a5](https://www.github.com/HalfdanJ/svelte-google-auth/commit/af8e7a5d8ac9fed4a61abbda758966ac4f7bf562))
+
 ### [0.3.2](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.1...v0.3.2) (2022-08-30)
 
 
