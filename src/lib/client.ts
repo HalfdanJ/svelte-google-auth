@@ -1,4 +1,4 @@
-import { get } from 'svelte/store';
+import { get, writable } from 'svelte/store';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
 
 /**
@@ -7,7 +7,9 @@ import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
 export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) {
 	await loadGIS();
 
-	const { invalidate } = await import('$app/navigation');
+	const { invalidate } = await import('$app/navigation').catch((e) => ({
+		invalidate: () => undefined
+	}));
 	const client_id = await getClientId();
 
 	return new Promise<void>((resolve, reject) => {
@@ -39,7 +41,9 @@ export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) 
 
 /** Sign user out */
 export async function signOut() {
-	const { invalidate } = await import('$app/navigation');
+	const { invalidate } = await import('$app/navigation').catch((e) => ({
+		invalidate: () => undefined
+	}));
 
 	await fetch(AUTH_SIGNOUT_URL, { method: 'POST' });
 	if (window.gapi) gapi.client.setToken({ access_token: '' });
@@ -64,7 +68,9 @@ export async function getGapiClient(
 		_gapiClientInitialized = true;
 	}
 
-	const { page } = await import('$app/stores');
+	const { page } = await import('$app/stores').catch(() => ({ page: undefined }));
+
+	if (!page) return null;
 	const access_token = get(page)?.data?.auth?.access_token;
 	if (access_token) gapi.client.setToken({ access_token: get(page).data.auth.access_token });
 	return gapi.client;
@@ -93,7 +99,9 @@ export async function loadGAPI() {
 }
 
 export async function getClientId() {
-	const { page } = await import('$app/stores');
+	const { page } = await import('$app/stores').catch(() => ({ page: undefined }));
+	if (!page) return '';
+
 	const clientId = get(page).data?.auth?.client_id as string;
 	if (!clientId) {
 		throw new Error(

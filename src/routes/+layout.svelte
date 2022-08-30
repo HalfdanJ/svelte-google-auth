@@ -1,12 +1,16 @@
 <script lang="ts">
-	import { signIn, signOut, user } from '$lib/client.js';
+	import { signIn, signOut } from '$lib/client.js';
+	import type { PageData } from './$types.js';
+
+	export let data: PageData;
+	console.log('data', data);
 </script>
 
 <header>
-	{#if $user}
+	{#if data.auth.user}
 		<p>
-			Signed in as {$user.name} ({$user.email})
-			<img src={$user.picture} width={36} referrerpolicy="no-referrer" alt="profile" />
+			Signed in as {data.auth.user.name} ({data.auth.user.email})
+			<img src={data.auth.user.picture} width={36} referrerpolicy="no-referrer" alt="profile" />
 		</p>
 		<p>
 			<button on:click={() => signOut()}>Sign out</button>

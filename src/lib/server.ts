@@ -125,7 +125,6 @@ export class SvelteGoogleAuthHook {
 	public handleAuth: Handle = async ({ event, resolve }) => {
 		// Read stored data from signed auth cookie
 		const storedTokens = this.parseSignedCookie(event.request);
-
 		// Create a oauth2 client
 		const oauth2Client = new google.auth.OAuth2(this.client.client_id, this.client.client_secret);
 
