@@ -42,7 +42,7 @@ Add `http://localhost:5173` as Authorized JavaScript origins, and
 In `src/hooks.(js|ts)`, initialize the authentication hook.
 
 ```ts
-import { SvelteGoogleAuthHook } from 'svelte-google-auth';
+import { SvelteGoogleAuthHook } from 'svelte-google-auth/server';
 import type { Handle } from '@sveltejs/kit';
 
 // Import client credentials from json file
@@ -62,10 +62,28 @@ This hook creates url routes needed for authentication callbacks, and parses aut
 In `src/routes/+layout.server.(js|ts)`, create the following load function:
 
 ```ts
-import { hydrateAuth } from 'svelte-google-auth';
+import { hydrateAuth } from 'svelte-google-auth/server';
 import type { LayoutServerLoad } from './$types.js';
 
 export const load: LayoutServerLoad = ({ locals }) => {
+	// By calling hydateAuth, certain variables from locals are parsed to the client
+	// allowing the client to access the user information and the client_id for login
+	return { ...hydrateAuth(locals) };
+};
+```
+
+To force that a user is signed in, you can redirect user to login page from here as well
+
+```ts
+import { hydrateAuth } from 'svelte-google-auth/server';
+import type { LayoutServerLoad } from './$types.js';
+
+const SCOPES = ['openid', 'profile', 'email'];
+
+export const load: LayoutServerLoad = ({ locals, url }) => {
+	if (!isSignedIn(locals)) {
+		throw redirect(302, generateAuthUrl(locals, url, SCOPES, url.pathname));
+	}
 	// By calling hydateAuth, certain variables from locals are parsed to the client
 	// allowing the client to access the user information and the client_id for login
 	return { ...hydrateAuth(locals) };
@@ -78,7 +96,8 @@ You can now use the library on any page/layout like this
 
 ```html
 <script lang="ts">
-	import { signIn, signOut, user } from 'svelte-google-auth/client';
+	import { signIn, signOut } from 'svelte-google-auth/client';
+	import { user } from 'svelte-google-auth/store';
 </script>
 
 {$user?.name}

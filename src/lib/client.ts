@@ -1,10 +1,5 @@
-import { invalidate } from '$app/navigation';
-import { page } from '$app/stores';
-import { derived, get } from 'svelte/store';
+import { get } from 'svelte/store';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
-import type { AuthClientData } from './server.js';
-
-export const user = derived(page, ($page) => ($page?.data?.auth as AuthClientData)?.user);
 
 /**
  * Prompt user to sign in using google auth
@@ -12,9 +7,12 @@ export const user = derived(page, ($page) => ($page?.data?.auth as AuthClientDat
 export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) {
 	await loadGIS();
 
+	const { invalidate } = await import('$app/navigation');
+	const client_id = await getClientId();
+
 	return new Promise<void>((resolve, reject) => {
 		const client = google.accounts.oauth2.initCodeClient({
-			client_id: getClientId(),
+			client_id,
 			scope: scopes.join(' '),
 			ux_mode: 'popup',
 
@@ -41,6 +39,8 @@ export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) 
 
 /** Sign user out */
 export async function signOut() {
+	const { invalidate } = await import('$app/navigation');
+
 	await fetch(AUTH_SIGNOUT_URL, { method: 'POST' });
 	if (window.gapi) gapi.client.setToken({ access_token: '' });
 
@@ -64,6 +64,7 @@ export async function getGapiClient(
 		_gapiClientInitialized = true;
 	}
 
+	const { page } = await import('$app/stores');
 	const access_token = get(page)?.data?.auth?.access_token;
 	if (access_token) gapi.client.setToken({ access_token: get(page).data.auth.access_token });
 	return gapi.client;
@@ -91,7 +92,8 @@ export async function loadGAPI() {
 	return injectScript('https://apis.google.com/js/api.js');
 }
 
-export function getClientId() {
+export async function getClientId() {
+	const { page } = await import('$app/stores');
 	const clientId = get(page).data?.auth?.client_id as string;
 	if (!clientId) {
 		throw new Error(
