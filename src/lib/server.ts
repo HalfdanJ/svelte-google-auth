@@ -118,9 +118,9 @@ export class SvelteGoogleAuthHook {
 			client_secret: string;
 			jwt_secret?: string;
 			[key: string]: unknown;
-			resolveOptions?: ResolveOptions;
 		},
-		private cookie_name = 'svgoogleauth'
+		private cookie_name = 'svgoogleauth',
+		private resolveOptions?: ResolveOptions
 	) {}
 
 	public handleAuth: Handle = async ({ event, resolve }) => {
@@ -169,7 +169,7 @@ export class SvelteGoogleAuthHook {
 			return this.handleSignOut({ event, resolve });
 		}
 
-		return await resolve(event, this.client.resolveOptions);
+		return await resolve(event, this.resolveOptions);
 	};
 
 	private handleSignOut: Handle = async () => {
