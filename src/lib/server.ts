@@ -1,4 +1,4 @@
-import { error, type Handle } from '@sveltejs/kit';
+import { error, type Handle, type ResolveOptions } from '@sveltejs/kit';
 import cookie from 'cookie';
 import type { Credentials, OAuth2Client } from 'google-auth-library';
 import { google } from 'googleapis';
@@ -119,7 +119,8 @@ export class SvelteGoogleAuthHook {
 			jwt_secret?: string;
 			[key: string]: unknown;
 		},
-		private cookie_name = 'svgoogleauth'
+		private cookie_name = 'svgoogleauth',
+		private resolveOptions?: ResolveOptions
 	) {}
 
 	public handleAuth: Handle = async ({ event, resolve }) => {
@@ -168,7 +169,7 @@ export class SvelteGoogleAuthHook {
 			return this.handleSignOut({ event, resolve });
 		}
 
-		return await resolve(event);
+		return await resolve(event, this.resolveOptions);
 	};
 
 	private handleSignOut: Handle = async () => {
