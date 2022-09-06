@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.4...v0.4.0) (2022-09-06)
+
+
+### Features
+
+* Add the ability to pass resolve options to the auth handler ([#11](https://www.github.com/HalfdanJ/svelte-google-auth/issues/11)) ([c200980](https://www.github.com/HalfdanJ/svelte-google-auth/commit/c200980bd7facb7fe42774957eb430de6d832f35))
+
 ### [0.3.4](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.3...v0.3.4) (2022-08-30)
 
 
