@@ -1,10 +1,10 @@
-import { invalidate } from '$app/navigation';
+import type { invalidate } from '$app/navigation';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
 import type { AuthClientData } from './server.js';
 
 interface AuthContext {
 	getData: () => AuthClientData;
-	invalidate: () => Promise<void>;
+	invalidate: typeof invalidate;
 }
 
 let context: AuthContext | undefined = undefined;
@@ -17,10 +17,10 @@ function getAuthContext(): AuthContext {
 	return context;
 }
 
-export async function initialize(data: { auth: AuthClientData }) {
+export async function initialize(data: { auth: AuthClientData }, _invalidate: typeof invalidate) {
 	context = {
 		getData: () => data.auth,
-		invalidate: () => invalidate()
+		invalidate: () => _invalidate()
 	};
 }
 
