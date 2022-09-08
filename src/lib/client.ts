@@ -1,5 +1,28 @@
-import { get, writable } from 'svelte/store';
+import { invalidate } from '$app/navigation';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
+import type { AuthClientData } from './server.js';
+
+interface AuthContext {
+	getData: () => AuthClientData;
+	invalidate: () => Promise<void>;
+}
+
+let context: AuthContext | undefined = undefined;
+
+function getAuthContext(): AuthContext {
+	if (!context)
+		throw new Error(
+			'svelte-google-auth context not defined. Did you forget to call `initialize(data)` +layout.svelte?'
+		);
+	return context;
+}
+
+export async function initialize(data: { auth: AuthClientData }) {
+	context = {
+		getData: () => data.auth,
+		invalidate: () => invalidate()
+	};
+}
 
 /**
  * Prompt user to sign in using google auth
@@ -7,9 +30,6 @@ import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
 export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) {
 	await loadGIS();
 
-	const { invalidate } = await import('$app/navigation').catch((e) => ({
-		invalidate: () => undefined
-	}));
 	const client_id = await getClientId();
 
 	return new Promise<void>((resolve, reject) => {
@@ -27,7 +47,7 @@ export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) 
 				xhr.setRequestHeader('X-Requested-With', 'XmlHttpRequest');
 				xhr.onload = async function () {
 					console.log('Auth code response: ' + xhr.responseText);
-					await invalidate();
+					await getAuthContext().invalidate();
 					resolve();
 				};
 				xhr.onerror = reject;
@@ -41,14 +61,10 @@ export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) 
 
 /** Sign user out */
 export async function signOut() {
-	const { invalidate } = await import('$app/navigation').catch((e) => ({
-		invalidate: () => undefined
-	}));
-
 	await fetch(AUTH_SIGNOUT_URL, { method: 'POST' });
 	if (window.gapi) gapi.client.setToken({ access_token: '' });
 
-	await invalidate();
+	await getAuthContext().invalidate();
 }
 
 let _gapiClientInitialized = false;
@@ -68,11 +84,8 @@ export async function getGapiClient(
 		_gapiClientInitialized = true;
 	}
 
-	const { page } = await import('$app/stores').catch(() => ({ page: undefined }));
-
-	if (!page) return null;
-	const access_token = get(page)?.data?.auth?.access_token;
-	if (access_token) gapi.client.setToken({ access_token: get(page).data.auth.access_token });
+	const access_token = getAuthContext().getData().access_token;
+	if (access_token) gapi.client.setToken({ access_token });
 	return gapi.client;
 }
 
@@ -99,10 +112,9 @@ export async function loadGAPI() {
 }
 
 export async function getClientId() {
-	const { page } = await import('$app/stores').catch(() => ({ page: undefined }));
-	if (!page) return '';
+	const data = getAuthContext().getData();
 
-	const clientId = get(page).data?.auth?.client_id as string;
+	const clientId = data.client_id as string;
 	if (!clientId) {
 		throw new Error(
 			'svelte-google-auth could not find required data from page data. \nDid you remember to return `hydrateAuth(locals)` in +layout.server.ts?'

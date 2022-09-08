@@ -1,8 +1,10 @@
 <script lang="ts">
-	import { signIn, signOut } from '$lib/client.js';
+	import { signIn, signOut, initialize } from '$lib/client.js';
 	import type { PageData } from './$types.js';
 
 	export let data: PageData;
+	initialize(data);
+
 	console.log('data', data);
 </script>
 
