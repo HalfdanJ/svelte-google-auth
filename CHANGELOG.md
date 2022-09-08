@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.5.0...v0.5.1) (2022-09-08)
+
+
+### Bug Fixes
+
+* Pass invalidate to initialize ([#17](https://www.github.com/HalfdanJ/svelte-google-auth/issues/17)) ([1a4b7b4](https://www.github.com/HalfdanJ/svelte-google-auth/commit/1a4b7b4d466ffcccfa2561b8d1944942820a9f45))
+
 ## [0.5.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.4.0...v0.5.0) (2022-09-08)
 
 
