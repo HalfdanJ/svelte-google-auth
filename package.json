@@ -1,6 +1,6 @@
 {
 	"name": "svelte-google-auth",
-	"version": "0.4.0",
+	"version": "0.5.0",
 	"author": "Jonas Jongejan <jonas@halfdanj.dk>",
 	"license": "apache-2.0",
 	"keywords": [

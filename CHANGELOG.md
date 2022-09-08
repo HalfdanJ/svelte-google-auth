@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.4.0...v0.5.0) (2022-09-08)
+
+
+### Features
+
+* Maintain local context in lib instead of relying on page stores ([#15](https://www.github.com/HalfdanJ/svelte-google-auth/issues/15)) ([6259882](https://www.github.com/HalfdanJ/svelte-google-auth/commit/62598821f89c1b71dc852b86228a4515f3ef10e0))
+
 ## [0.4.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.3.4...v0.4.0) (2022-09-06)
 
 
