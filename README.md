@@ -96,11 +96,12 @@ You can now use the library on any page/layout like this
 
 ```html
 <script lang="ts">
+	import { invalidate } from '$app/navigation';
 	import { signIn, signOut, initialize } from 'svelte-google-auth/client';
 	import type { PageData } from './$types.js';
 
 	export let data: PageData;
-	initialize(data);
+	initialize(data, invalidate);
 </script>
 
 {data.auth.user?.name}
