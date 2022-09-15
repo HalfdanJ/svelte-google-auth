@@ -39,7 +39,7 @@ Add `http://localhost:5173` as Authorized JavaScript origins, and
 
 ### hooks
 
-In `src/hooks.(js|ts)`, initialize the authentication hook.
+In `src/hooks.server.(js|ts)`, initialize the authentication hook.
 
 ```ts
 import { SvelteGoogleAuthHook } from 'svelte-google-auth/server';
