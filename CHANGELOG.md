@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.5.2](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.5.1...v0.5.2) (2022-09-15)
+
+
+### Bug Fixes
+
+* Changes to hooks and invalidate to support latest sveltekit ([#20](https://www.github.com/HalfdanJ/svelte-google-auth/issues/20)) ([4626192](https://www.github.com/HalfdanJ/svelte-google-auth/commit/46261921b21c1415c0ee359e34dd4c9940b776b8))
+
 ### [0.5.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.5.0...v0.5.1) (2022-09-08)
 
 
