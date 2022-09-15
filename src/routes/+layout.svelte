@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
+	import { invalidateAll } from '$app/navigation';
 	import { signIn, signOut, initialize } from '$lib/client.js';
 	import type { PageData } from './$types.js';
 
 	export let data: PageData;
-	initialize(data, invalidate);
+	initialize(data, invalidateAll);
 
 	console.log('data', data);
 </script>

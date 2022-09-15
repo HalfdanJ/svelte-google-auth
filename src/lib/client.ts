@@ -1,10 +1,10 @@
-import type { invalidate } from '$app/navigation';
+import type { invalidateAll } from '$app/navigation';
 import { AUTH_CODE_CALLBACK_URL, AUTH_SIGNOUT_URL } from './constants.js';
 import type { AuthClientData } from './server.js';
 
 interface AuthContext {
 	getData: () => AuthClientData;
-	invalidate: typeof invalidate;
+	invalidateAll: typeof invalidate;
 }
 
 let context: AuthContext | undefined = undefined;
@@ -17,10 +17,13 @@ function getAuthContext(): AuthContext {
 	return context;
 }
 
-export async function initialize(data: { auth: AuthClientData }, _invalidate: typeof invalidate) {
+export async function initialize(
+	data: { auth: AuthClientData },
+	_invalidateAll: typeof invalidateAll
+) {
 	context = {
 		getData: () => data.auth,
-		invalidate: () => _invalidate()
+		invalidateAll: () => _invalidateAll()
 	};
 }
 
@@ -47,7 +50,7 @@ export async function signIn(scopes: string[] = ['openid', 'profile', 'email']) 
 				xhr.setRequestHeader('X-Requested-With', 'XmlHttpRequest');
 				xhr.onload = async function () {
 					console.log('Auth code response: ' + xhr.responseText);
-					await getAuthContext().invalidate();
+					await getAuthContext().invalidateAll();
 					resolve();
 				};
 				xhr.onerror = reject;
@@ -64,7 +67,7 @@ export async function signOut() {
 	await fetch(AUTH_SIGNOUT_URL, { method: 'POST' });
 	if (window.gapi) gapi.client.setToken({ access_token: '' });
 
-	await getAuthContext().invalidate();
+	await getAuthContext().invalidateAll();
 }
 
 let _gapiClientInitialized = false;
