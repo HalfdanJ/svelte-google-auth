@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.6.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.5.2...v0.6.0) (2022-09-19)
+
+
+### Features
+
+* Redirect to current path by default ([b6b2d76](https://www.github.com/HalfdanJ/svelte-google-auth/commit/b6b2d760492660cb8121478483c5cb4490500ef1))
+
+
+### Bug Fixes
+
+* Set 30 day expiration on cookie headers ([52e5de8](https://www.github.com/HalfdanJ/svelte-google-auth/commit/52e5de8155753c74bdb5a5e0759d857908a8efd9))
+
 ### [0.5.2](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.5.1...v0.5.2) (2022-09-15)
 
 
