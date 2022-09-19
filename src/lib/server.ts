@@ -94,6 +94,8 @@ export function generateAuthUrl(
 ) {
 	const authLocals = getAuthLocals(locals);
 
+	if (!redirectUrl) redirectUrl = url.pathname;
+
 	const redirect_uri = `${url.origin}${AUTH_CODE_CALLBACK_URL}`;
 	const client = new google.auth.OAuth2(
 		authLocals.client_id,
@@ -177,9 +179,7 @@ export class SvelteGoogleAuthHook {
 		const signed = this.signJwtTokens({});
 
 		return new Response('signed out', {
-			headers: {
-				'set-cookie': `${this.cookie_name}=${signed}; Path=/; HttpOnly`
-			}
+			headers: this.setCookieHeader(signed)
 		});
 	};
 
@@ -199,9 +199,7 @@ export class SvelteGoogleAuthHook {
 		const signedTokens = this.signJwtTokens(tokens);
 
 		return new Response('ok', {
-			headers: {
-				'set-cookie': `${this.cookie_name}=${signedTokens}; Path=/; HttpOnly`
-			}
+			headers: this.setCookieHeader(signedTokens)
 		});
 	};
 
@@ -218,7 +216,7 @@ export class SvelteGoogleAuthHook {
 		return new Response(`Ok`, {
 			status: 302,
 			headers: {
-				'set-cookie': `${this.cookie_name}=${signedTokens}; Path=/; HttpOnly`,
+				...this.setCookieHeader(signedTokens),
 				Location: `${event.url.origin}${state}`
 			}
 		});
@@ -280,5 +278,14 @@ export class SvelteGoogleAuthHook {
 		if (decoded.iss !== 'https://accounts.google.com')
 			throw error(403, 'Invalid id_token issuer ' + decoded.iss);
 		return decoded;
+	}
+
+	private setCookieHeader(signedTokens: string) {
+		const maxAgeDays = 30;
+		return {
+			'set-cookie': `${this.cookie_name}=${signedTokens}; Path=/; HttpOnly; Secure; Max-Age=${
+				maxAgeDays * 86400
+			}`
+		};
 	}
 }
