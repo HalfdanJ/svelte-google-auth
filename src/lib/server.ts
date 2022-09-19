@@ -94,6 +94,8 @@ export function generateAuthUrl(
 ) {
 	const authLocals = getAuthLocals(locals);
 
+	if (!redirectUrl) redirectUrl = url.pathname;
+
 	const redirect_uri = `${url.origin}${AUTH_CODE_CALLBACK_URL}`;
 	const client = new google.auth.OAuth2(
 		authLocals.client_id,
