@@ -4,7 +4,7 @@ import type { AuthClientData } from './server.js';
 
 interface AuthContext {
 	getData: () => AuthClientData;
-	invalidateAll: typeof invalidate;
+	invalidateAll: typeof invalidateAll;
 }
 
 let context: AuthContext | undefined = undefined;

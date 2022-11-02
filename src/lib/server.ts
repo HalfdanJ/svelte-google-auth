@@ -52,8 +52,14 @@ export interface AuthClientDataSignedIn {
 	access_token: string;
 }
 
-export function getAuthLocals(locals: App.Locals) {
-	return locals as AuthLocals & App.Locals;
+/**
+ * Cast the locals to locals including the auth
+ * @param locals
+ */
+export function getAuthLocals(locals: AuthLocalsSignedIn): AuthLocalsSignedIn & App.Locals;
+export function getAuthLocals(locals: App.Locals): AuthLocals & App.Locals;
+export function getAuthLocals(locals: App.Locals | AuthLocalsSignedIn) {
+	return locals as (AuthLocals | AuthLocalsSignedIn) & App.Locals;
 }
 
 /**
