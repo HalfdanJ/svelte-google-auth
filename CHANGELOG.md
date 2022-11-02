@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.6.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.6.0...v0.6.1) (2022-11-02)
+
+
+### Bug Fixes
+
+* Fix types on getAuthLocals ([#24](https://www.github.com/HalfdanJ/svelte-google-auth/issues/24)) ([d89979b](https://www.github.com/HalfdanJ/svelte-google-auth/commit/d89979bdde2f52334b05431ecbdc246f0dce6ac7))
+
 ## [0.6.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.5.2...v0.6.0) (2022-09-19)
 
 
