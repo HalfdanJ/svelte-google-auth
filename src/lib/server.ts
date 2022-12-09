@@ -144,26 +144,32 @@ export class SvelteGoogleAuthHook {
 			client: oauth2Client
 		};
 
-		if (storedTokens?.refresh_token) {
-			// Obtain a valid access token
-			const accessToken = await this.getAccessToken(storedTokens);
-			// Decode user information from id token
-			const user = this.decodeIdToken(storedTokens);
+		try {
+			if (storedTokens?.refresh_token) {
+				// Obtain a valid access token
+				const accessToken = await this.getAccessToken(storedTokens);
+				// Decode user information from id token
+				const user = this.decodeIdToken(storedTokens);
 
-			// Set credentials on oauth2 client
-			oauth2Client.setCredentials(storedTokens);
+				// Set credentials on oauth2 client
+				oauth2Client.setCredentials(storedTokens);
 
-			storedTokens.access_token = accessToken;
+				storedTokens.access_token = accessToken;
 
-			// Store tokens and user in locals
-			(event.locals as AuthLocals) = {
-				...event.locals,
-				user,
-				token: storedTokens,
-				client_id: this.client.client_id,
-				client_secret: this.client.client_secret,
-				client: oauth2Client
-			};
+				// Store tokens and user in locals
+				(event.locals as AuthLocals) = {
+					...event.locals,
+					user,
+					token: storedTokens,
+					client_id: this.client.client_id,
+					client_secret: this.client.client_secret,
+					client: oauth2Client
+				};
+			}
+		} catch (e) {
+			// Something went wrong parsing stored refresh tokens.
+			// Dont update locals with tokens, and let application
+			// decide what to do with lack of tokens.
 		}
 
 		// Inject url's for handling sign in and out
