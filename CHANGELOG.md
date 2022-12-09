@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.6.2](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.6.1...v0.6.2) (2022-12-09)
+
+
+### Bug Fixes
+
+* Add try catch around refresh token handling ([#26](https://www.github.com/HalfdanJ/svelte-google-auth/issues/26)) ([ff97d2b](https://www.github.com/HalfdanJ/svelte-google-auth/commit/ff97d2bfc33c5d52eb1e12946fc04556d91b5e42))
+
 ### [0.6.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.6.0...v0.6.1) (2022-11-02)
 
 
