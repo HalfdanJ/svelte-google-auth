@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.7.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.6.2...v0.7.0) (2023-01-15)
+
+
+### Features
+
+* Enable requests that contain bearer token ([#28](https://www.github.com/HalfdanJ/svelte-google-auth/issues/28)) ([84f46bc](https://www.github.com/HalfdanJ/svelte-google-auth/commit/84f46bc675d57ee3cd25d0c359db6488844943e1))
+
 ### [0.6.2](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.6.1...v0.6.2) (2022-12-09)
 
 
