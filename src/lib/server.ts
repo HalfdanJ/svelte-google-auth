@@ -144,6 +144,31 @@ export class SvelteGoogleAuthHook {
 			client: oauth2Client
 		};
 
+		// Check if request contains autorization header
+		const autorizationHeader = event.request.headers.get('Authorization');
+		if (autorizationHeader?.toLowerCase().startsWith('bearer')) {
+			const bearerToken = autorizationHeader.match(/^bearer (.+)$/i)?.[1];
+			if (bearerToken) {
+				const [tokenInfo, userInfo] = await Promise.all([
+					this.getTokenInfo(bearerToken),
+					this.getUserInfo(bearerToken)
+				]);
+
+				if (tokenInfo && userInfo) {
+					const user: DecodedIdToken = { ...tokenInfo, ...userInfo };
+					(event.locals as AuthLocals) = {
+						...event.locals,
+						user,
+						token: { access_token: bearerToken, scope: tokenInfo.scope, token_type: 'Bearer' },
+						client_id: this.client.client_id,
+						client_secret: this.client.client_secret,
+						client: oauth2Client
+					};
+					return await resolve(event, this.resolveOptions);
+				}
+			}
+		}
+
 		try {
 			if (storedTokens?.refresh_token) {
 				// Obtain a valid access token
@@ -299,5 +324,16 @@ export class SvelteGoogleAuthHook {
 				maxAgeDays * 86400
 			}`
 		};
+	}
+
+	private getTokenInfo(accessToken: string) {
+		return fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`).then(
+			(res) => res.json()
+		);
+	}
+	private getUserInfo(accessToken: string) {
+		return fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`).then(
+			(res) => res.json()
+		);
 	}
 }
