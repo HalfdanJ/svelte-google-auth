@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.7.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.7.0...v0.7.1) (2023-01-17)
+
+
+### Bug Fixes
+
+* Correct error handling with bearer tokens ([#30](https://www.github.com/HalfdanJ/svelte-google-auth/issues/30)) ([4ba03a7](https://www.github.com/HalfdanJ/svelte-google-auth/commit/4ba03a7e2f7a61cca4466be7cd8824bcf67a5caa))
+
 ## [0.7.0](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.6.2...v0.7.0) (2023-01-15)
 
 
