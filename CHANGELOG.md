@@ -1,5 +1,12 @@
 # Changelog
 
+### [0.7.2](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.7.1...v0.7.2) (2023-01-17)
+
+
+### Bug Fixes
+
+* Update vulnerability of packages ([#32](https://www.github.com/HalfdanJ/svelte-google-auth/issues/32)) ([7ba4729](https://www.github.com/HalfdanJ/svelte-google-auth/commit/7ba4729625cc4bc8d84b09208a9d505aad2069d3))
+
 ### [0.7.1](https://www.github.com/HalfdanJ/svelte-google-auth/compare/v0.7.0...v0.7.1) (2023-01-17)
 
 
