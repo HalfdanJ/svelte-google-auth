@@ -11,7 +11,9 @@
 			headers: {
 				Authorization: `Bearer ${data.auth.access_token}`
 			}
-		}).then((res) => res.json());
+		})
+			.then((res) => res.json())
+			.catch((e) => e);
 </script>
 
 <h1>Example of requesting authentication using bearer token.</h1>

@@ -148,11 +148,12 @@ export class SvelteGoogleAuthHook {
 		const autorizationHeader = event.request.headers.get('Authorization');
 		if (autorizationHeader?.toLowerCase().startsWith('bearer')) {
 			const bearerToken = autorizationHeader.match(/^bearer (.+)$/i)?.[1];
+
 			if (bearerToken) {
 				const [tokenInfo, userInfo] = await Promise.all([
 					this.getTokenInfo(bearerToken),
 					this.getUserInfo(bearerToken)
-				]);
+				]).catch(() => [null, null]);
 
 				if (tokenInfo && userInfo) {
 					const user: DecodedIdToken = { ...tokenInfo, ...userInfo };
@@ -167,48 +168,52 @@ export class SvelteGoogleAuthHook {
 					return await resolve(event, this.resolveOptions);
 				}
 			}
-		}
 
-		try {
-			if (storedTokens?.refresh_token) {
-				// Obtain a valid access token
-				const accessToken = await this.getAccessToken(storedTokens);
-				// Decode user information from id token
-				const user = this.decodeIdToken(storedTokens);
+			return new Response(`Invalid bearer token, expected oauth2 access token`, {
+				status: 401
+			});
+		} else {
+			try {
+				if (storedTokens?.refresh_token) {
+					// Obtain a valid access token
+					const accessToken = await this.getAccessToken(storedTokens);
+					// Decode user information from id token
+					const user = this.decodeIdToken(storedTokens);
 
-				// Set credentials on oauth2 client
-				oauth2Client.setCredentials(storedTokens);
+					// Set credentials on oauth2 client
+					oauth2Client.setCredentials(storedTokens);
 
-				storedTokens.access_token = accessToken;
+					storedTokens.access_token = accessToken;
 
-				// Store tokens and user in locals
-				(event.locals as AuthLocals) = {
-					...event.locals,
-					user,
-					token: storedTokens,
-					client_id: this.client.client_id,
-					client_secret: this.client.client_secret,
-					client: oauth2Client
-				};
+					// Store tokens and user in locals
+					(event.locals as AuthLocals) = {
+						...event.locals,
+						user,
+						token: storedTokens,
+						client_id: this.client.client_id,
+						client_secret: this.client.client_secret,
+						client: oauth2Client
+					};
+				}
+			} catch (e) {
+				// Something went wrong parsing stored refresh tokens.
+				// Dont update locals with tokens, and let application
+				// decide what to do with lack of tokens.
 			}
-		} catch (e) {
-			// Something went wrong parsing stored refresh tokens.
-			// Dont update locals with tokens, and let application
-			// decide what to do with lack of tokens.
-		}
 
-		// Inject url's for handling sign in and out
-		if (event.url.pathname === AUTH_CODE_CALLBACK_URL) {
-			if (event.request.method === 'POST') {
-				return this.handlePostCode({ event, resolve });
-			} else if (event.request.method === 'GET') {
-				return this.handleGetCode({ event, resolve });
+			// Inject url's for handling sign in and out
+			if (event.url.pathname === AUTH_CODE_CALLBACK_URL) {
+				if (event.request.method === 'POST') {
+					return this.handlePostCode({ event, resolve });
+				} else if (event.request.method === 'GET') {
+					return this.handleGetCode({ event, resolve });
+				}
+			} else if (event.url.pathname === AUTH_SIGNOUT_URL) {
+				return this.handleSignOut({ event, resolve });
 			}
-		} else if (event.url.pathname === AUTH_SIGNOUT_URL) {
-			return this.handleSignOut({ event, resolve });
-		}
 
-		return await resolve(event, this.resolveOptions);
+			return await resolve(event, this.resolveOptions);
+		}
 	};
 
 	private handleSignOut: Handle = async () => {
@@ -327,13 +332,19 @@ export class SvelteGoogleAuthHook {
 	}
 
 	private getTokenInfo(accessToken: string) {
-		return fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`).then(
-			(res) => res.json()
-		);
+		return fetch(`https://www.googleapis.com/oauth2/v3/tokeninfo?access_token=${accessToken}`)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.error) throw new Error(res.error);
+				return res;
+			});
 	}
 	private getUserInfo(accessToken: string) {
-		return fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`).then(
-			(res) => res.json()
-		);
+		return fetch(`https://www.googleapis.com/oauth2/v3/userinfo?access_token=${accessToken}`)
+			.then((res) => res.json())
+			.then((res) => {
+				if (res.error) throw new Error(res.error);
+				return res;
+			});
 	}
 }
