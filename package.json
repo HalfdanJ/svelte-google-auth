@@ -18,22 +18,22 @@
 		"format": "prettier --write ."
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.25.0",
+		"@playwright/test": "^1.29.2",
 		"@sveltejs/adapter-auto": "next",
 		"@sveltejs/kit": "next",
 		"@sveltejs/package": "next",
 		"@types/cookie": "^0.5.1",
-		"@types/gapi": "^0.0.42",
+		"@types/gapi": "^0.0.43",
 		"@types/gapi.calendar": "^3.0.6",
-		"@types/google.accounts": "^0.0.2",
-		"@types/jsonwebtoken": "^8.5.9",
-		"@typescript-eslint/eslint-plugin": "^5.27.0",
-		"@typescript-eslint/parser": "^5.27.0",
-		"eslint": "^8.16.0",
-		"eslint-config-prettier": "^8.3.0",
+		"@types/google.accounts": "^0.0.5",
+		"@types/jsonwebtoken": "^9.0.1",
+		"@typescript-eslint/eslint-plugin": "^5.48.2",
+		"@typescript-eslint/parser": "^5.48.2",
+		"eslint": "^8.32.0",
+		"eslint-config-prettier": "^8.6.0",
 		"eslint-plugin-svelte3": "^4.0.0",
-		"prettier": "^2.6.2",
-		"prettier-plugin-svelte": "^2.7.0",
+		"prettier": "^2.8.3",
+		"prettier-plugin-svelte": "^2.9.0",
 		"svelte": "^3.44.0",
 		"svelte-check": "^2.7.1",
 		"svelte-preprocess": "^4.10.6",
@@ -44,7 +44,7 @@
 	"type": "module",
 	"dependencies": {
 		"cookie": "^0.5.0",
-		"jsonwebtoken": "^8.5.1",
-		"googleapis": "^107.0.0"
+		"jsonwebtoken": "^9.0.0",
+		"googleapis": "^110.0.0"
 	}
 }
