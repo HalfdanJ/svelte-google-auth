@@ -1,30 +1,26 @@
 # svelte-google-auth
 
-> :warning: **Work in progress**: Use at your own risk
+[![NPM version](https://img.shields.io/npm/v/svelte-google-auth.svg?style=flat)](https://www.npmjs.com/package/svelte-google-auth)
+[![stability-beta](https://img.shields.io/badge/stability-beta-33bbff.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#beta)
 
-This library makes it easy to use Google authentication in sveltekit. The library handles the interaction with [Google Identity Services](https://developers.google.com/identity), and stores the authenticated user in a cookie for subsequent visits.
+This library makes it easy to use Google authentication in sveltekit. It handles the interaction with [Google Identity Services](https://developers.google.com/identity), and stores the authenticated user in a cookie for subsequent visits. It also makes it possible to run authorized google api calls from both client side and server side.
 
-The library makes it possible to run authorized google api calls from both client side and server side.
+## How it works
 
-## How does it work
+The library follows the offical guide for [oauth2 code model](https://developers.google.com/identity/oauth2/web/guides/use-code-model#redirect-mode).
 
-The library follows in broad strokes the offical guide for [oauth2 code model](https://developers.google.com/identity/oauth2/web/guides/use-code-model#redirect-mode).
-
-1. The user authenticates with the site in a popup
-2. The popup responds with a code that gets send to the backend
+1. User authenticates with the site in a popup
+2. Popup responds with a code that gets send to the backend
 3. Backend converts the code to tokens (both access token and refresh token)
-4. The tokens get signed into a jwt httpOnly cookie, making every subsequent call to the backend authenticated
-5. The library returns the authenticated user back to the client using [page data](https://kit.svelte.dev/docs/load)
+4. Tokens get signed into a jwt httpOnly cookie, making every subsequent call to the backend authenticated
+5. Library returns the authenticated user back to the client using [page data](https://kit.svelte.dev/docs/load)
 
-## Example
 
-[/src/routes](/src/routes) Shows how the api can be used. Run `npm run dev` to run it locally.
+
 
 ## Getting started
 
 ### Install
-
-Run
 
 ```
 npm i svelte-google-auth
@@ -32,12 +28,12 @@ npm i svelte-google-auth
 
 ### Credentials
 
-To use the library, first create a [OAuth2 Client Credentials](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred) in Google Cloud. Store the json file in your project, but make sure to not commiting the file to git.
+Create a [OAuth2 Client Credentials](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred) in Google Cloud. Store the json file in your project, but make sure to not commiting the file to git.
 
 Add `http://localhost:5173` as Authorized JavaScript origins, and
 `http://localhost:5173/_auth/callback` as Authorized redirect URIs
 
-### hooks
+### Hooks
 
 In `src/hooks.server.(js|ts)`, initialize the authentication hook.
 
@@ -54,8 +50,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	return await auth.handleAuth({ event, resolve });
 };
 ```
-
-This hook creates url routes needed for authentication callbacks, and parses authentication cookies on each request.
 
 ### +layout.server
 
@@ -108,3 +102,8 @@ You can now use the library on any page/layout like this
 <button on:click={() => signIn()}>Sign In</button>
 <button on:click={() => signOut()}>Sign Out</button>
 ```
+
+## Example
+
+Check out the [example](/src/routes) to see how the api can be used. Run `npm run dev` to run it locally.
+
