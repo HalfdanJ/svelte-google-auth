@@ -3,7 +3,7 @@
 [![NPM version](https://img.shields.io/npm/v/svelte-google-auth.svg?style=flat)](https://www.npmjs.com/package/svelte-google-auth)
 [![stability-beta](https://img.shields.io/badge/stability-beta-33bbff.svg)](https://github.com/mkenney/software-guides/blob/master/STABILITY-BADGES.md#beta)
 
-This library makes it easy to use Google authentication in sveltekit. It handles the interaction with [Google Identity Services](https://developers.google.com/identity), and stores the authenticated user in a cookie for subsequent visits. It also makes it possible to run authorized google api calls from both client side and server side.
+This library provides an easy-to-use solution for Google authentication in sveltekit, facilitating interaction with Google Identity Services and cookie storage for authenticated users in subsequent visits. It also allows authorized Google API calls from client and server sides. 
 
 ## How it works
 
@@ -28,10 +28,10 @@ npm i svelte-google-auth
 
 ### Credentials
 
-Create a [OAuth2 Client Credentials](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred) in Google Cloud. Store the json file in your project, but make sure to not commiting the file to git.
+Create an [OAuth2 Client Credentials](https://developers.google.com/identity/protocols/oauth2/web-server#creatingcred) in Google Cloud. Store the JSON file in your project but avoid committing it to Git. The following Authorized redirect URIs and Authorized JavaScript origins must be added:
+- Authorized JavaScript origins: `http://localhost:5173`
+- Authorized redirect URIs: `http://localhost:5173/_auth/callback`
 
-Add `http://localhost:5173` as Authorized JavaScript origins, and
-`http://localhost:5173/_auth/callback` as Authorized redirect URIs
 
 ### Hooks
 
@@ -53,7 +53,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 
 ### +layout.server
 
-In `src/routes/+layout.server.(js|ts)`, create the following load function:
+In the `src/routes/+layout.server.(js|ts)` file, create the following `load` function:
 
 ```ts
 import { hydrateAuth } from 'svelte-google-auth/server';
@@ -66,7 +66,7 @@ export const load: LayoutServerLoad = ({ locals }) => {
 };
 ```
 
-To force that a user is signed in, you can redirect user to login page from here as well
+To force a user to sign in, you can redirect them to the login page as shown in the following updated `load` function:
 
 ```ts
 import { hydrateAuth } from 'svelte-google-auth/server';
